@@ -1,5 +1,5 @@
 //General imports.
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Row, Card, Col, Form, Button, } from 'react-bootstrap';
 import { TimePicker, DatePicker } from 'antd';
 import moment from 'moment';
@@ -8,6 +8,8 @@ import 'antd/dist/antd.css';
 
 //Resource imports.
 import { SELECT_DAY, SELECT_MONTH, SELECT_TOD, DATE_FORMAT, TIME_FORMAT, CREATE_CARPOOL_URL } from '../Res/constants';
+import { AuthContext } from '../Contexts/AuthContext';
+import LocationPicker from './LocationPicker';
 
 //Functional component - CreateCarpool.
 export default function CreateCarpool() {
@@ -31,44 +33,40 @@ export default function CreateCarpool() {
 
     //Function to handle form submission.
     const submitted = (e) => {
-        
-        if(checkValidSchedule({"date" : date, "time" : time}))  { 
-            
+        if (e) e.preventDefault();
+
+        if (checkValidSchedule({ date: date, time: time })) {
             setErrorMessage("");
-            axios.post(CREATE_CARPOOL_URL, {
-                ownerid: employeeID,
-                ownername: firstname,
-                vehicle: vehicle,
-                regno: regno,
-                noOfSeats: noOfSeats,
-                date: date,
-                time: time
-            }).then(isLoggedIn => {
-                
-                if(isLoggedIn)
-                {
-                    this.setState({
-                        isLoggedIn: true,
-                        employeeID: localStorage.getItem('empid'),
-                        firstName: localStorage.getItem('firstname'),
-                        errorMessage: 'NaN'
-                    })
-                }
-                else
-                {
-                    console.log("No session found");
-                    this.setState(
-                        {
-                            isLoggedIn: false
-                        }
-                    )
-                }
-            })
-        } 
-        else {
-            setErrorMessage("Invalid schedule!")
+            axios
+                .post(CREATE_CARPOOL_URL, {
+                    ownerid: employeeID,
+                    ownername: firstname,
+                    fromLocation: fromLocation,
+                    toLocation: toLocation,
+                    vehicle: vehicle,
+                    regno: regno,
+                    noofSeats: parseInt(noOfSeats),
+                    date: date,
+                    time: time
+                })
+                .then((res) => {
+                    console.log("Create carpool response:", res.data);
+                    if (res.data && res.data.success) {
+                        setErrorMessage("Ride created successfully!");
+                        setTimeout(() => {
+                            window.location.href = "/";
+                        }, 1500);
+                    } else {
+                        setErrorMessage("Failed to create ride: " + (res.data?.message || "Unknown error"));
+                    }
+                })
+                .catch((err) => {
+                    console.error("Create carpool error:", err.response || err);
+                    setErrorMessage("Failed to create ride: " + (err.response?.data?.message || err.message));
+                });
+        } else {
+            setErrorMessage("Invalid schedule!");
         }
-        
     }
 
     //Check if the date and time user provides are valid.
@@ -129,15 +127,15 @@ export default function CreateCarpool() {
                 <Form>
                     <Row>
                         <Col>
-                            <Form.Control placeholder = "Riding from"  onChange = {(e) => {
-                                    setFromLocation(e.target.value);
-                                    }}
+                            <LocationPicker 
+                                placeholder="📍 Riding from" 
+                                onLocationSelect={setFromLocation}
                             />
                         </Col>
                         <Col>
-                            <Form.Control placeholder = "Riding to" onChange = {(e) => {
-                                    setToLocation(e.target.value);
-                                }}
+                            <LocationPicker 
+                                placeholder="📍 Riding to" 
+                                onLocationSelect={setToLocation}
                             />
                         </Col>
                     </Row>

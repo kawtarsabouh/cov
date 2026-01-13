@@ -10,6 +10,7 @@ package com.purple.vride.controllers;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,10 +21,10 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.purple.vride.repositories.SignedInRepository;
 import com.purple.vride.repositories.UserRepository;
-import com.purple.vride.services.PasswordHasher;
 import com.purple.vride.models.SignedIn;
 
 @RestController
@@ -39,16 +40,19 @@ public class LoginController {
 	
 	
 	@PostMapping("/login")
-	public String logIn(@RequestBody Map<String,Object> loginParams)
+	public Map<String, Object> logIn(@RequestBody Map<String,Object> loginParams)
 	{
 		LOGGER.log(Level.FINE, "Log-in initiated.");
 		String id;
 		String password;
-		StringBuilder response = new StringBuilder("");
+		Map<String, Object> response = new HashMap<>();
+		response.put("status", "FAILURE");
+		
 		id = (String) loginParams.get("id");
 		password = (String) loginParams.get("password");
 		
 		List<User> users = (List<User>) userRepository.findAll();
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 		
 		try 
 		{
@@ -58,16 +62,22 @@ public class LoginController {
 				User us = (User) iter.next();
 				if(id.equals(""+us.getId()))
 				{
-					PasswordHasher ph = new PasswordHasher(password);
-					String hash = ph.getHash();
-					System.out.println(hash);
-					if(hash.equals(us.getPassword()))
+					// Use bcrypt to verify password
+					if(encoder.matches(password, us.getPassword()))
 					{
-						response.append("SUCCESS");
+						response.put("status", "SUCCESS");
+						response.put("firstname", us.getFirstName());
+						response.put("lastname", us.getLastName());
+						response.put("email", us.getEmail());
+						response.put("empid", us.getId());
+						LOGGER.log(Level.FINE, "Login successful for user: " + id);
+						break;
 					}
 					else
 					{
-						response.append("FAILURE");
+						response.put("status", "FAILURE");
+						response.put("message", "Incorrect password");
+						LOGGER.log(Level.FINE, "Login failed - incorrect password for user: " + id);
 					}
 				}
 			}
@@ -75,13 +85,14 @@ public class LoginController {
 		catch(Exception e)
 		{
 			LOGGER.log(Level.SEVERE, "Error logging in: " + e.getMessage());
-			response.append("FAILURE");
+			response.put("status", "FAILURE");
+			response.put("message", "Error: " + e.getMessage());
 		}
 		
-		return response.toString();
+		return response;
 	}
 	
-	@PostMapping("/signUp")
+	@PostMapping("/signup")
 	public String signUp(@RequestBody Map<String,Object> credentials)
 	{
 		LOGGER.log(Level.FINE, "Sign up initiated.");
@@ -91,12 +102,13 @@ public class LoginController {
 		String email = (String) credentials.get("email");
 		String password = (String) credentials.get("password");
 		String status= (String) credentials.get("status");
-		PasswordHasher ph = new PasswordHasher(password);
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 		try 
 		{
-			String hashedPassword = ph.getHash();
+			String hashedPassword = encoder.encode(password);
 			User newUser = new User(id,firstName,lastName,email,hashedPassword,status);
 			userRepository.save(newUser);
+			LOGGER.log(Level.FINE, "User signed up successfully: " + id);
 			return "SUCCESS";
 		}
 		catch(Exception e)

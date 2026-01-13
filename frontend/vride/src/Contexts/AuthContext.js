@@ -11,8 +11,8 @@ export default class AuthContextProvider extends Component {
 
     state = {
         isLoggedIn: false,
-        employeeID : 2,
-        firstname: 'Vishal',
+        employeeID : 'NONE',
+        firstname: 'NONE',
         errorMessage: 'NaN'
     }
 
@@ -25,7 +25,7 @@ export default class AuthContextProvider extends Component {
     {
         var emp = localStorage.getItem('empid');
         var fn = localStorage.getItem('firstname');
-        if(!(emp === "NONE"))
+        if(emp && emp !== "NONE" && emp !== "null")
         {
             //console.log("Request sent");
             axios.post(CHECK_SIGNED_IN_URL, {
@@ -38,7 +38,7 @@ export default class AuthContextProvider extends Component {
                     this.setState({
                         isLoggedIn: true,
                         employeeID: localStorage.getItem('empid'),
-                        firstName: localStorage.getItem('firstname'),
+                        firstname: localStorage.getItem('firstname'),
                         errorMessage: 'NaN'
                     })
                 }
@@ -66,50 +66,59 @@ export default class AuthContextProvider extends Component {
             password: passwordParam
           })
           .then(res => {
-            if(res.data === "SUCCESS")
+            if(res.data.status === "SUCCESS")
             {
                 this.setState({
                     isLoggedIn: true,
-                    employeeID: details.empId,
-                    firstname: "Vishal",
+                    employeeID: res.data.empid,
+                    firstname: res.data.firstname,
                     errorMessage: "NONE"
                 });
                 if(keepMeSignedIn)
                 {
                     console.log("Keep me signed in");
                     localStorage.setItem('empid', this.state.employeeID);
+                    localStorage.setItem('firstname', res.data.firstname);
                     localStorage.setItem('firstname', this.state.firstname);
                 }
             }
             else
             {
-                this.setErrorMessage("Error logging in! Please check your Employee ID and Password");
+                this.setState({
+                    errorMessage: res.data.message || "Login failed! Check your Employee ID and password."
+                });
             }
+          })
+          .catch(error => {
+              this.setState({
+                  errorMessage: "Cannot connect to server. Please check if backend is running."
+              });
           })
     }
 
     signOut = (user) => {
 
+        // Clear localStorage and update state immediately
+        localStorage.removeItem('empid');
+        localStorage.removeItem('firstname');
+        
+        this.setState({
+            isLoggedIn: false,
+            employeeID: "NONE",
+            firstname: "NONE",
+            errorMessage: "NaN"
+        });
+
+        // Optionally call backend (but don't wait for it)
         axios.post(SIGNOUT_URL, {
             empid: user.empid,
             firstname: user.firstname
-        }).then(res => {
-            if(res.data === "SUCCESS")
-            {
-                localStorage.setItem('empid', null);
-                localStorage.setItem('firstname',null);
-                this.setState({
-                    isLoggedIn: false,
-                    empid: "NONE",
-                    firstname: "NONE",
-                    errorMessage: "NaN"
-                })
-            }
-            else
-            {
-                console.log("FAILURE");
-            }
-        })
+        }).catch(err => {
+            console.log("Signout backend error:", err);
+        });
+        
+        // Redirect to home
+        window.location.href = '/';
     }
 
 
@@ -147,7 +156,7 @@ export default class AuthContextProvider extends Component {
 
     render() {
         return (
-           <AuthContext.Provider value = {{...this.state, login: this.login, signOut: this.signOut}}>
+           <AuthContext.Provider value = {{...this.state, login: this.login, signOut: this.signOut, signUp: this.signUp}}>
                { this.props.children }
            </AuthContext.Provider>
         )

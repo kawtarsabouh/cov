@@ -21,7 +21,7 @@ import javax.persistence.Table;
 import javax.persistence.JoinColumn;
 
 @Entity
-@Table(name = "user")
+@Table(name = "app_user")
 public class User {
 	
 	public User(int id, String firstName, String lastName, String email, String password, String status) {

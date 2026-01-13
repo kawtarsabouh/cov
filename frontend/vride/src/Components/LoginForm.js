@@ -17,11 +17,18 @@ export default function LoginForm() {
     const[keepMeSignedIn, setKeepMeSignedIn] = useState(false);
 
     //Context destructuring.
-    const { login } = useContext(AuthContext);
+    const { login, errorMessage: contextError } = useContext(AuthContext);
 
     //Function to handle form submission.
     const submitted = (e) =>
     {
+        e.preventDefault();
+        
+        if (!empId || !password) {
+            setErrorMessage("Please fill all fields!");
+            return;
+        }
+        
         const details = {
             empId : empId,
             password: password,
@@ -32,35 +39,42 @@ export default function LoginForm() {
 
     return (
        
-        <Card style = { {width: "20rem", "marginTop": "10px", "marginRight" : "40px"} } bg = "dark">
-            <Card.Body>
-                <Card.Title style = { {color: "white"} }>
-                    Login to your account
+        <Card style = { {width: "100%", "marginTop": "24px", background: "#ffffff", boxShadow: "0 1px 3px rgba(0,0,0,0.08)", borderRadius: "16px", border: "none"} }>
+            <Card.Body style={{padding: "32px"}}>
+                <Card.Title style = { {color: "#1a1a1a", fontSize: "22px", fontWeight: "700", marginBottom: "8px", letterSpacing: "-0.3px"} }>
+                    Welcome back
                 </Card.Title>
-                <Card.Body>
+                <p style={{color: "#8E8E93", fontSize: "14px", marginBottom: "24px"}}>Sign in to continue to VRide</p>
                     <Form  >
-                        <Form.Control type = "text" value = { empId } placeholder = "Employee ID"
-                            onChange = {(e) => {
-                                setEmpId(e.target.value);
-                            }}
-                        />
-                        <br/>
-                        <Form.Control type = "password" value = { password } placeholder = "Your password"
-                            onChange = {(e) => {
-                                setPassword(e.target.value);
-                            }}/>
-                        <br/>
-                        <Form.Check type = "checkbox" label = "Keep me signed in." style = { {color: "white"} }
+                        <Form.Group style={{marginBottom: "16px"}}>
+                            <Form.Label style={{color: "#1a1a1a", fontWeight: "600", fontSize: "14px", marginBottom: "8px"}}>Employee ID</Form.Label>
+                            <Form.Control type = "text" value = { empId } placeholder = "Enter your ID"
+                                style={{padding: "14px 16px", borderRadius: "12px", border: "none", background: "#F5F5F7", fontSize: "15px"}}
+                                onChange = {(e) => {
+                                    setEmpId(e.target.value);
+                                }}
+                            />
+                        </Form.Group>
+                        <Form.Group style={{marginBottom: "16px"}}>
+                            <Form.Label style={{color: "#1a1a1a", fontWeight: "600", fontSize: "14px", marginBottom: "8px"}}>Password</Form.Label>
+                            <Form.Control type = "password" value = { password } placeholder = "Enter your password"
+                                style={{padding: "14px 16px", borderRadius: "12px", border: "none", background: "#F5F5F7", fontSize: "15px"}}
+                                onChange = {(e) => {
+                                    setPassword(e.target.value);
+                                }}/>
+                        </Form.Group>
+                        <Form.Check type = "checkbox" label = "Keep me signed in" style = { {color: "#8E8E93", fontSize: "14px", marginBottom: "20px"} }
                             onChange = {(e) => {
                                 setKeepMeSignedIn(e.target.checked);
                             }}
                         />
-                        <br/>
-                        <Button variant = "primary" onClick = { submitted }>Log In</Button><br/>
-                       <Link to = "/signup"> <h6 style = { {color:"skyblue", marginTop: "25px", padding:"5px", cursor: "pointer"} }>Not a registered user? Sign Up!</h6> </Link>
-                        <h6 style = { {color:"red", marginTop: "25px", padding:"5px"} }>{ errorMessage }</h6>
+                        <Button onClick = { submitted } style={{width: "100%", padding: "14px", background: "#667eea", border: "none", borderRadius: "14px", fontSize: "16px", fontWeight: "600", marginBottom: "16px", transition: "opacity 0.2s"}}
+                            onMouseEnter={(e) => e.currentTarget.style.opacity = "0.9"}
+                            onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
+                        >Sign In</Button>
+                       <Link to = "/signup" style={{textDecoration: "none"}}> <p style = { {color:"#667eea", textAlign: "center", fontSize: "14px", cursor: "pointer", marginBottom: 0} }>Don't have an account? <strong>Sign up</strong></p> </Link>
+                        {(errorMessage || contextError !== 'NaN') && <div style={{marginTop: "16px", padding: "12px", background: "#FFE5E5", borderRadius: "12px", color: "#D32F2F", fontSize: "13px", textAlign: "center"}}>{errorMessage || contextError}</div>}
                     </Form>
-                </Card.Body>
             </Card.Body>
         </Card>
     )

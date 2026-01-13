@@ -1,17 +1,24 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto:700');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-
+body {
+  background: #F5F5F7;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+}
 
 #cont {
-  color:#999;
+  color:#2d3436;
   text-transform: uppercase;
   font-size:36px;
-  font-weight:bold;
+  font-weight:700;
   padding-top:200px;  
   margin-top: -200px;
   width:100%;
   bottom:45%;
   display:block;
+  letter-spacing: -0.5px;
 }
 
 #flip {

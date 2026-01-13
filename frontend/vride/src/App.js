@@ -15,16 +15,16 @@ import MapsView from './Components/MapsView';
 //Functional component - App
 function App() {
   return (
-    <Switch>
-      <AuthContextProvider>
-          <NavigationBar/>
-          <Route exact path = "/" component = {HomePage}/>
-          <Route path = "/home" component = {HomePage}/>
-          <Route path = "/create" component = {CreateCarpool}/>
-          <Route path = "/signup" component = {SignUp}/>
-          <Route path = "/maps" component = {MapsView}/>
-      </AuthContextProvider>
-    </Switch>
+    <AuthContextProvider>
+      <NavigationBar/>
+      <Switch>
+        <Route exact path = "/" component = {HomePage}/>
+        <Route path = "/home" component = {HomePage}/>
+        <Route path = "/create" component = {CreateCarpool}/>
+        <Route path = "/signup" component = {SignUp}/>
+        <Route path = "/maps" component = {MapsView}/>
+      </Switch>
+    </AuthContextProvider>
   );
 }
 

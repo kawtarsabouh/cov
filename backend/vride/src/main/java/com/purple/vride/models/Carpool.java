@@ -32,6 +32,9 @@ public class Carpool {
 	@Column(name = "fromlocation")
 	private String fromLocation;
 	
+	@Column(name = "tolocation")
+	private String toLocation;
+	
 	@Column(name = "vehicle")
 	private String vehicle;
 	
@@ -83,6 +86,12 @@ public class Carpool {
 	}
 	public void setFromLocation(String fromLocation) {
 		this.fromLocation = fromLocation;
+	}
+	public String getToLocation() {
+		return toLocation;
+	}
+	public void setToLocation(String toLocation) {
+		this.toLocation = toLocation;
 	}
 	public String getVehicle() {
 		return vehicle;

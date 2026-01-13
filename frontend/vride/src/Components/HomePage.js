@@ -24,12 +24,12 @@ export default class HomePage extends Component {
         if(isLoggedIn)
         {
         return (
-            <div >
-            <Row>
-                <Col>
+            <div style={{maxWidth: "1400px", margin: "0 auto", padding: "20px"}}>
+            <Row style={{margin: 0}}>
+                <Col lg={8} style={{paddingRight: "12px", paddingLeft: 0}}>
                     <Carpools/>
                 </Col>
-                <Col>
+                <Col lg={4} style={{paddingLeft: "12px", paddingRight: 0}}>
                     <CreateCarpool/>
                 </Col>
             </Row>
@@ -39,12 +39,12 @@ export default class HomePage extends Component {
         else
         {
             return (
-               <div>
-                    <Row>
-                        <Col xs lg={9}>
+               <div style={{maxWidth: "1400px", margin: "0 auto", padding: "20px"}}>
+                    <Row style={{margin: 0}}>
+                        <Col lg={8} style={{paddingRight: "12px", paddingLeft: 0}}>
                             <Carpools/>
                         </Col>
-                        <Col>
+                        <Col lg={4} style={{paddingLeft: "12px", paddingRight: 0}}>
                             <LoginForm/>
                         </Col>
                     </Row>

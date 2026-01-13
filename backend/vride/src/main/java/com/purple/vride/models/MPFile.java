@@ -10,6 +10,7 @@ public class MPFile {
 	@Id
 	@GeneratedValue(generator = "uuid")
 	@GenericGenerator(name = "uuid", strategy = "uuid2")
+	@Column(length = 36)
 	private String id;
 	
 	private String fileName;

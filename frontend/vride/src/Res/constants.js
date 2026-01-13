@@ -11,7 +11,7 @@ export const SIGNED_IN_LINKS = ['Home','Create Carpool','My Carpools', 'My Rides
 export const SIGNED_OUT_LINKS = ['Home','Sign Up','Contact Us']
 
 //CarpoolFeed
-export const CARPOOL_URL = 'http://localhost:8080/carpools'
+export const CARPOOL_URL = 'http://localhost:8080/api/carpools'
 export const NO_CARPOOLS = 'No available carpools!'
 export const DIST_METRES = ' metres away.'
 export const DIST_KMS = ' kms away.'
@@ -41,4 +41,4 @@ export const TIME_FORMAT = 'HH:mm'
 export const API_TOKEN = 'AIzaSyDp7Mg6f15W5wGeWjKClAWQCXuzgWxhjvw';
 
 //Create Carpool
-export const CREATE_CARPOOL_URL = "http://localhost:8080/createcarpool";
+export const CREATE_CARPOOL_URL = "http://localhost:8080/api/carpools";
